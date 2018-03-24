@@ -115,24 +115,24 @@ class MLP():
                 while train_index+batch_size <= total_samples:
                     X_batch = X[train_index:train_index+batch_size]
                     y_batch = y[train_index:train_index+batch_size]
-                    feed_dict_train = {self.X_placeholder:X_batch, self.y_placeholder=y_batch, self.dropout_list_placeholder=self._dropout}
+                    feed_dict_train = {self.X_placeholder:X_batch, self.y_placeholder:y_batch, self.dropout_list_placeholder:self._dropout}
                     sess.run(optimizer, feed_dict=feed_dict_train)
                     train_index += batch_size
 
                 if train_index < total_samples:
                     X_batch = X[train_index:]
                     y_batch = y[train_index:]
-                    feed_dict_train = {self.X_placeholder:X_batch, self.y_placeholder=y_batch, self.dropout_list_placeholder=self._dropout}
+                    feed_dict_train = {self.X_placeholder:X_batch, self.y_placeholder:y_batch, self.dropout_list_placeholder:self._dropout}
                     sess.run(optimizer, feed_dict=feed_dict_train)
 
-                train_cost = sess.run(cost, feed_dict={self.X_placeholder=X, self.y_placeholder=y, self.dropout_list_placeholder=self._dropout})
-                test_acc = sess.run(accuracy, feed_dict={self.X_placeholder=X_test, self.y_placeholder=y_test, self.dropout_list_placeholder=[1]*self.returnNumOfLayers()]} )
+                train_cost = sess.run(cost, feed_dict={self.X_placeholder:X, self.y_placeholder:y, self.dropout_list_placeholder:self._dropout})
+                test_acc = sess.run(accuracy, feed_dict={self.X_placeholder:X_test, self.y_placeholder:y_test, self.dropout_list_placeholder:[1]*self.returnNumOfLayers()} )
 
                 print("Epoch {0} : Training loss: {1}, \t test accuracy : {2}".format(epoch, train_cost, test_acc))
                 seed += 1
 
     def predict(X):
         sess = tf.Session()
-        y_pred = sess.run(self.y_pred, feed_dict={X:X, self.dropout_list_placeholder=[1]*self.returnNumOfLayers()})
+        y_pred = sess.run(self.y_pred, feed_dict={X:X, self.dropout_list_placeholder:[1]*self.returnNumOfLayers()})
 
         return y_pred
