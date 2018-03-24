@@ -7,7 +7,7 @@ Input: current working directory which contains the folder "data"
 '''
 def original(currentPath):
     df = pd.read_csv(os.path.join(currentPath, "data", "pima-diabetes.csv"))
-    
+
     return df
 
 '''
@@ -16,7 +16,7 @@ Input: current working directory which contains the folder "data"
 '''
 def trainImputed(currentPath):
     df = pd.read_csv(os.path.join(currentPath, "data", "pima_train.csv"))
-    
+    df = df.drop(df.columns[0], axis=1)
     return df
 
 '''
@@ -28,9 +28,10 @@ def testImputed(currentPath):
 
     for i in range(1,6):
         df = pd.read_csv(os.path.join(currentPath, "data", "pima_test{}.csv".format(i)))
+        df = df.drop(df.columns[0], axis=1)
         df_list.append(df)
 
     return df_list
 
 if __name__ == "__main__":
-   print("") 
+   print("")
