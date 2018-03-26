@@ -4,6 +4,7 @@ import itertools
 import copy
 import matplotlib
 from matplotlib import pyplot as plt
+from sklearn.model_selection import StratifiedKFold
 matplotlib.style.use('ggplot')
 
 '''
@@ -163,8 +164,9 @@ class MLP():
             num_epochs
             batch_size
             seed
+            printResults, indicator to print cost and graph. A boolean.
     '''
-    def train(self, X, y, X_test, y_test, lr=1e-3, num_epochs=100, batch_size=128, seed=1):
+    def train(self, X, y, X_test, y_test, lr=1e-3, num_epochs=100, batch_size=128, seed=1, printResults=True, returnResults=False):
         #Set seed for reproducibility
         tf.set_random_seed(seed)
         shuffling_seed = copy.deepcopy(seed)
@@ -221,19 +223,31 @@ class MLP():
                 feed_dict_test[self.y_placeholder] = y_test
                 test_acc = sess.run(accuracy, feed_dict=feed_dict_test )
 
-
-                if epoch % 10 == 0:
+                #Print cost
+                if epoch % 10 == 0 and printResults==True:
                     print("Epoch {0} : Training loss: {1}, \n test accuracy : {2}\n".format(epoch+1, train_cost, test_acc))
 
                 #In order to produce different shuffling
                 shuffling_seed += 1
 
+                #Store results
+                if epoch == num_epochs-1 and returnResults == True:
+                    results["train_loss"] = training_loss
+                    results["test_acc"] = test_acc
+
             #Plot training loss graph
-            plt.plot(training_loss)
-            plt.show()
+            if printResults== True:
+                plt.plot(training_loss)
+                plt.show()
 
             #save trained variables as separate dictionary with actual numbers
             self.trained_variables = sess.run(self._variables)
+
+            #Return results if returnResults is True
+            if returnResults == True:
+                return results
+            else:
+                pass
 
     #Predict on a set of features and returns class labels in the form of
     # 2D array i.e. [[0,1] [1.0]]. It uses trained variables to predict.
@@ -254,9 +268,9 @@ class MLP():
             #probability
             y_pred = sess.run( tf.nn.softmax(y_pred) )
 
-        results = [y_pred_cls]
+        results["y_pred_cls"] = [y_pred_cls]
 
         if return_prob == True:
-            results.append(y_pred)
+            results["y_pred_prob"]= y_pred
 
         return results
