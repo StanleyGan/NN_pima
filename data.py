@@ -44,6 +44,7 @@ def returnScaledTestList(scaler, test_list):
     test_split_scaled_list = copy.deepcopy(test_list)
 
     for idx, test_data in enumerate(test_split_scaled_list):
+        # print(test_data)
         temp_scaled_test = scaler.transform(test_data[0])
         test_split_scaled_list[idx][0] = temp_scaled_test
 
