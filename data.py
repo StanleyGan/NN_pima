@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import copy
 
 '''
 Returns the original dataset as a dataframe
@@ -32,6 +33,21 @@ def testImputed(currentPath):
         df_list.append(df)
 
     return df_list
+
+'''
+Returns scaled test sets
+Input: scaler, sklearn.StandardScaler()
+        test_list, a list of test sets. A list where each element is a numpy 2D array of
+        form [X,y] where X is the input and y is the label
+'''
+def returnScaledTestList(scaler, test_list):
+    test_split_scaled_list = copy.deepcopy(test_list)
+
+    for idx, test_data in enumerate(test_split_scaled_list):
+        temp_scaled_test = scaler.transform(test_data[0])
+        test_split_scaled_list[idx][0] = temp_scaled_test
+
+    return test_split_scaled_list
 
 if __name__ == "__main__":
    print("")

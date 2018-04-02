@@ -231,6 +231,7 @@ class MLP():
                 shuffling_seed += 1
 
                 #Store results
+                results=dict()
                 if epoch == num_epochs-1 and returnResults == True:
                     results["train_loss"] = training_loss
                     results["test_acc"] = test_acc
@@ -257,6 +258,8 @@ class MLP():
         assert(len(self.trained_variables) != 0), "Please train the model before predicting!"
         self._buildCompGraph(self.trained_variables)
 
+        res=dict()
+
         with tf.Session() as sess:
             sess = tf.Session()
             feed_dict = {ph:1.0 for ph in self.dropout_list_placeholder}
@@ -268,9 +271,9 @@ class MLP():
             #probability
             y_pred = sess.run( tf.nn.softmax(y_pred) )
 
-        results["y_pred_cls"] = [y_pred_cls]
+            res["y_pred_cls"] = y_pred_cls
 
-        if return_prob == True:
-            results["y_pred_prob"]= y_pred
+            if return_prob == True:
+                res["y_pred_prob"]= y_pred
 
-        return results
+        return res
