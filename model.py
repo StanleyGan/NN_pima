@@ -254,8 +254,9 @@ class MLP():
     # 2D array i.e. [[0,1] [1.0]]. It uses trained variables to predict.
     #Input: X, data set. A 2D array
     #        return_prob, True if user wants to return the probability value
-    def predict(self,X, return_prob=False):
+    def predict(self,X, return_prob=False, seed=1):
         assert(len(self.trained_variables) != 0), "Please train the model before predicting!"
+        tf.set_random_seed(seed)
         self._buildCompGraph(self.trained_variables)
 
         res=dict()

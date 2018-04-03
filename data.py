@@ -50,5 +50,6 @@ def returnScaledTestList(scaler, test_list):
 
     return test_split_scaled_list
 
+
 if __name__ == "__main__":
    print("")

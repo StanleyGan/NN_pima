@@ -1,9 +1,10 @@
 from model import MLP
 import itertools
 from sklearn.model_selection import StratifiedKFold
+from sklearn.decomposition import SparsePCA
 import numpy as np
 
-def cross_validate(X, y, neurons, activations, dropout, inputDim, outputDim, lr, num_epochs, batch_size, seed, n_splits=5):
+def cross_validate(X, y, neurons, activations, dropout, inputDim, outputDim, lr, num_epochs, batch_size, seed, n_splits=5, **kwargs):
     skf=StratifiedKFold(n_splits=n_splits,random_state=seed)
 
     acc_list = list()
@@ -22,7 +23,7 @@ def cross_validate(X, y, neurons, activations, dropout, inputDim, outputDim, lr,
                     num_epochs=num_epochs, batch_size=batch_size, seed=seed,
                     printResults=False, returnResults=False)
 
-        results = mlp.predict(X_val)
+        results = mlp.predict(X_val, seed=seed)
         # print results["y_pred_cls"][:,0]
         accuracy = (results["y_pred_cls"][:,0] == y_val[:,0]).sum() / float(len(results["y_pred_cls"]))
         acc_list.append(accuracy)
@@ -33,7 +34,7 @@ def cross_validate(X, y, neurons, activations, dropout, inputDim, outputDim, lr,
     return acc_list
 
 
-def CV_pipeline(X, y,neurons, activations, dropout, lr, inputDim, outputDim, num_epochs=5000, batch_size=128, seed=1, n_splits=5):
+def CV_pipeline(X, y,neurons, activations, dropout, lr, inputDim, outputDim, num_epochs=2000, batch_size=128, seed=1, n_splits=5, **kwargs):
     parameters_acc = dict()
     parameters_details = dict()
     track = 0
@@ -41,7 +42,7 @@ def CV_pipeline(X, y,neurons, activations, dropout, lr, inputDim, outputDim, num
     for (neu, act, dro, lr_s) in itertools.izip(neurons, activations, dropout, lr):
         print("Parameter set {}:".format(track +1))
         acc_list = cross_validate(X, y, neurons=neu, activations=act, dropout=dro, lr=lr_s, inputDim=inputDim,
-        outputDim=outputDim, num_epochs=num_epochs, batch_size=batch_size, seed=seed, n_splits=n_splits)
+        outputDim=outputDim, num_epochs=num_epochs, batch_size=batch_size, seed=seed, n_splits=n_splits, **kwargs)
 
         temp_dict = dict()
         temp_dict["neurons"] = neu
@@ -62,3 +63,16 @@ def CV_pipeline(X, y,neurons, activations, dropout, lr, inputDim, outputDim, num
     print("The parameters which achieve this accuracy are: ")
     for idx, par in enumerate(best_param):
         print("{0}: {1}".format(idx, parameters_details[par]))
+
+'''
+Returns a fitted sklearn.decomposition.SparsePCA object
+Input: X, a 2D numpy array to be fitted
+        n_comp: an int. Number of components
+        random_state: an int. Seed
+'''
+
+def spca(X, n_comp, random_state):
+    spca = SparsePCA(n_components=n_comp, random_state=random_state)
+    spca.fit(X)
+
+    return spca
